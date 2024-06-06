@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recrutamento Secreto</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            max-width: 600px;
+            padding: 20px;
+            border: 1px solid #444;
+            background-color: #111;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #0f0;
+        }
+        p {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 1em;
+            color: #000;
+            background-color: #0f0;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #0b0;
+        }
+        #puzzle-container {
+            display: none;
+        }
+    </style>
+    <script>
+        function checkAnswer() {
+            const answer = document.getElementById('answer').value;
+            if (answer === '42') {
+                document.getElementById('puzzle-container').style.display = 'none';
+                document.getElementById('approval-container').style.display = 'block';
+            } else {
+                alert('Resposta incorreta. Tente novamente.');
+            }
+        }
+
+        function showPuzzle() {
+            document.getElementById('puzzle-container').style.display = 'block';
+            document.getElementById('initial-container').style.display = 'none';
+        }
+    </script>
+</head>
+<body>
+    <div class="container" id="initial-container">
+        <h1>Convite Exclusivo</h1>
+        <p>Você foi selecionado para uma missão especial. Se aceitar, clique no botão abaixo para resolver um puzzle e saber mais detalhes.</p>
+        <a href="#" class="btn" onclick="showPuzzle()">Aceitar Missão</a>
+    </div>
+
+    <div class="container" id="puzzle-container">
+        <h1>Responda o Puzzle</h1>
+        <p>Qual é a resposta para a vida, o universo e tudo mais?</p>
+        <input type="text" id="answer" placeholder="Digite sua resposta">
+        <button class="btn" onclick="checkAnswer()">Enviar</button>
+    </div>
+
+    <div class="container" id="approval-container" style="display: none;">
+        <h1>Parabéns!</h1>
+        <p>Você resolveu o puzzle corretamente. Bem-vindo à missão.</p>
+        <p>Entraremos em contato em breve!</p>
+    </div>
+</body>
+</html>
