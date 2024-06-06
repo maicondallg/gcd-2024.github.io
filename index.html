@@ -3,17 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recrutamento Secreto</title>
+    <title>?</title>
     <style>
         body {
-            background-color: #000;
-            color: #fff;
-            font-family: 'Courier New', Courier, monospace;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
+            background-color: #121212;
+            font-family: Arial, sans-serif;
+            color: white;
+        }
+        #puzzle {
+            display: grid;
+            grid-template-columns: repeat(4, 100px);
+            grid-template-rows: repeat(4, 100px);
+            gap: 5px;
+            margin-bottom: 20px;
+        }
+        .tile {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100px;
+            height: 100px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .empty {
+            background-color: #121212;
+            cursor: default;
+        }
+        #timer {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        #message {
+            font-size: 20px;
+            color: #4CAF50;
+        }
+        #recruitment {
+            display: none;
+            font-size: 24px;
+            color: #4CAF50;
+            text-align: center;
         }
         .container {
             text-align: center;
@@ -44,45 +80,107 @@
         .btn:hover {
             background-color: #0b0;
         }
-        #puzzle-container {
-            display: none;
-        }
     </style>
+</head>
+<body>
+    <div id="timer">Tempo: 0s</div>
+    <div id="puzzle"></div>
+    <div id="message"></div>
+    <div id="recruitment">
+        <h1>Parabéns!</h1>
+        <p>Você resolveu o puzzle corretamente. Bem-vindo à missão.</p>
+        <p>Entraremos em contato em breve!.</p>
+    </div>
     <script>
-        function checkAnswer() {
-            const answer = document.getElementById('answer').value;
-            if (answer === '42') {
-                document.getElementById('puzzle-container').style.display = 'none';
-                document.getElementById('approval-container').style.display = 'block';
-            } else {
-                alert('Resposta incorreta. Tente novamente.');
+        const puzzle = document.getElementById('puzzle');
+        const timerElement = document.getElementById('timer');
+        const messageElement = document.getElementById('message');
+        const recruitmentElement = document.getElementById('recruitment');
+        const finalTimeElement = document.getElementById('final-time');
+        let tiles = Array.from({ length: 15 }, (_, i) => i + 1).concat(null);
+        let timer = 0;
+        let interval;
+        let timeout;
+
+        // Function to shuffle the tiles
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // Initialize the puzzle with shuffled tiles
+        function initializePuzzle() {
+            shuffle(tiles);
+            renderPuzzle();
+            startTimer();
+        }
+
+        // Create and display tiles
+        function renderPuzzle() {
+            puzzle.innerHTML = '';
+            tiles.forEach(tile => {
+                const tileElement = document.createElement('div');
+                tileElement.className = 'tile';
+                if (tile) {
+                    tileElement.textContent = tile;
+                    tileElement.addEventListener('click', () => moveTile(tile));
+                } else {
+                    tileElement.classList.add('empty');
+                }
+                puzzle.appendChild(tileElement);
+            });
+        }
+
+        // Move the tile if the move is valid
+        function moveTile(number) {
+            const index = tiles.indexOf(number);
+            const emptyIndex = tiles.indexOf(null);
+
+            // Calculate valid moves (left, right, up, down)
+            const validMoves = [emptyIndex - 1, emptyIndex + 1, emptyIndex - 4, emptyIndex + 4];
+            if (validMoves.includes(index) && 
+                (Math.floor(index / 4) === Math.floor(emptyIndex / 4) || Math.abs(index - emptyIndex) === 4)) {
+                [tiles[index], tiles[emptyIndex]] = [tiles[emptyIndex], tiles[index]];
+                renderPuzzle();
+                if (checkWin()) {
+                    clearInterval(interval);
+                    clearTimeout(timeout);
+                    messageElement.textContent = '';
+                    
+                    puzzle.style.display = 'none';
+                    finalTimeElement.textContent = timer;
+                    recruitmentElement.style.display = 'block';
+                }
             }
         }
 
-        function showPuzzle() {
-            document.getElementById('puzzle-container').style.display = 'block';
-            document.getElementById('initial-container').style.display = 'none';
+        // Check if the puzzle is solved
+        function checkWin() {
+            for (let i = 0; i < 15; i++) {
+                if (tiles[i] !== i + 1) {
+                    return false;
+                }
+            }
+            return true;
         }
+
+        // Start the timer
+        function startTimer() {
+            timer = 0;
+            interval = setInterval(() => {
+                timer++;
+                timerElement.textContent = `Tempo: ${timer}s`;
+            }, 1000);
+            timeout = setTimeout(() => {
+                window.location.href = 'pagina_nao_recrutada.html';
+            }, 60000); // 1 minute
+        }
+
+        // Initialize and render the puzzle
+        initializePuzzle();
     </script>
-</head>
-<body>
-    <div class="container" id="initial-container">
-        <h1>Convite Exclusivo</h1>
-        <p>Você foi selecionado para uma missão especial. Se aceitar, clique no botão abaixo para resolver um puzzle e saber mais detalhes.</p>
-        <a href="#" class="btn" onclick="showPuzzle()">Aceitar Missão</a>
-    </div>
-
-    <div class="container" id="puzzle-container">
-        <h1>Responda o Puzzle</h1>
-        <p>Qual é a resposta para a vida, o universo e t                    udo mais?</p>
-        <input type="text" id="answer" placeholder="Digite sua resposta">
-        <button class="btn" onclick="checkAnswer()">Enviar</button>
-    </div>
-
-    <div class="container" id="approval-container" style="display: none;">
-        <h1>Parabéns!</h1>
-        <p>Você resolveu o puzzle corretamente. Bem-vindo à missão.</p>
-        <p>Entraremos em contato em breve!</p>
-    </div>
 </body>
 </html>
